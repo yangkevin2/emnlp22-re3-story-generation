@@ -1,0 +1,83 @@
+text,name,key,value
+Elle Woods is a powerful witch.,Elle Woods,identity,witch
+Cara loves Lenny.,Cara,"Lenny's,love interest's name","admirer,Lenny"
+Harold Mayfleet is a young boy who loves books.,Harold Mayfleet,"gender,hobby,age","male,books,young"
+"Jenna Chen is beautiful, even though she doesn't care about appearances.",Jenna Chen,"gender,appearance","female,beautiful"
+Sarah Winters is a woman who is trying to make ends meet.,Sarah Winters,"gender,financial situation","female,trying to make ends meet"
+"Molly is curious and determined, and she wants to figure out what is going on in the game world.",Molly,gender,female
+Christopher Borden is haunted by his past.,Christopher Borden,gender,male
+Scout Moore is a girl who is adjusting to a family move from a small town to the New York City.,Scout Moore,"gender,home location,previous home location","female,New York City,small town"
+John Smith was an engineer who created intelligent machines that now run the world.,John Smith,occupation,engineer
+Jane Doe is John Doe's wife.,Jane Doe,"gender,John's,husband's name","female,wife,John Doe"
+"William ""Billy"" Bensington is an adventurous 12-year-old who loves exploring new things.","William ""Billy"" Bensington",age,12
+Mr. Ochocinski works at the hospital in their hometown.,Mr. Ochocinski,"gender,workplace","male,hospital"
+Christopher Butler is the son of Ashley Butler.,Christopher Butler,"gender,Ashley's,mother's name","male,son,Ashley Butler"
+Anna Fleur is an ambitious young woman.,Anna Fleur,gender,female
+Jordan Marshall is Naomi Nakahara's boyfriend.,Jordan Marshall,"gender,Naomi's,girlfriend's name","male,boyfriend,Naomi Nakahara"
+David Monroe is not afraid of danger.,David Monroe,,
+Tina Palmer befriends Amy Sinkhorn.,Tina Palmer,"Amy's,friend's name","friend,Amy Sinkhorn"
+Anabel has faced many challenges in her life.,Anabel,"gender,background","female,many challenges in life"
+Arnold Oparin was born into a wealthy family.,Arnold Oparin,background,wealthy
+Mallory Saunders is not happy about having to spend her weekend with her parents.,Mallory Saunders,gender,female
+Violet Nightingale has been forced to work in the sap harvesting business since she was a child.,Violet Nightingale,"gender,occupation","female,sap harvesting"
+Tomas Serrat is Maria Serrat's brother.,Tomas Serrat,"gender,Maria's,sister's name","male,brother,Maria Serrat"
+Jensen Wojciehowski is strong and muscular.,Jensen Wojciehowski,appearance,strong and muscular
+Mayor Jameson came up with the idea to harvest sap from her own citizens,Mayor Jameson,gender,female
+Andrea Montgomery is the daughter of William Montgomery.,Andrea Montgomery,"gender,William's,father's name","female,daughter,William Montgomery"
+Eric Beetleson is a human who dreams of being a beetle.,Eric Beetleson,dream,to be a beetle
+Sydney Wells is a woman who has been assigned by Montgomery's will to close down his Estate.,Sydney Wells,gender,female
+Anderson Peters has spent his life trying to escape his father's shadow.,Anderson Peters,gender,male
+Jonathan Hill is a struggling artist.,Jonathan Hill,"occupation,financial situation","artist,struggling"
+Megan Hill is Moe Hill's mother.,Megan Hill,"gender,Moe's,son's name","female,mother,Moe Hill"
+Sandra Zhang worries about her son's well-being.,Sandra Zhang,gender,female
+Emily Foster is Mark Johnson's girlfriend.,Emily Foster,"gender,Mark's,boyfriend's name","female,girlfriend,Mark Johnson"
+Sam Jameson has cancer.,Sam Jameson,health,has cancer
+William Cruise is a guy who is willing to try Dr. Jameson's serum.,William Cruise,gender,male
+"Charlotte Silverstein is 14 years old and 5'8"".",Charlotte Silverstein,"age,height","14,5'8"""
+Jeremy Kingston is 16 years old.,Jeremy Kingston,age,16
+Rachel Kim's father loves her children dearly.,Rachel Kim,gender,female
+Joon Kim is brave and willing to risk her own safety in order to find food for her family.,Joon Kim,gender,female
+Brendan Spencer is Mary Spencer's older brother.,Brendan Spencer,"gender,Mary's,sister's name","male,older brother,Mary Spencer"
+Meg Green is a scientist.,Meg Green,occupation,scientist
+Mallory Jensen is an 18-year-old recent graduate from college.,Mallory Jensen,"age,education","18,recent graduate from college"
+Benjamin Wilson is an eccentric man who has lived alone in a small town for as long as anyone can remember.,Benjamin Wilson,"gender,living situation,home location","male,alone,small town"
+Aria Winchester is the younger sister of Sam Winchester.,Aria Winchester,"gender,Sam's,brother's name","female,younger sister,Sam Winchester"
+"Jill Jones is close with her father, John Smith.",Jill Jones,"gender,father's name,John's","female,John Smith,daughter"
+Sherry Evans is a woman who was living the American dream until she was diagnosed with a terminal illness.,Sherry Evans,"gender,health","female,has a terminal illness"
+Rebecca Morgan is Sherry Morgan's eldest daughter.,Rebecca Morgan,"gender,Sherry's,mother's name","female,eldest daughter,Sherry Morgan"
+Lynn Phillips abandoned her daughter Lacey at a young age.,Lynn Phillips,"gender,daughter's name,Lacey's","female,Lacey Phillips,mother"
+Professor Haggerty recommended that Emily move away from home after graduation.,Professor Haggerty,occupation,professor
+Tom Smith is confident in his abilities to forage for mushrooms.,Tom Smith,"gender,skills","male,foraging for mushrooms"
+Tom is grieving for his wife Anna who died in a car accident.,Tom,"gender,wife's name,Anna's","male,Anna,husband"
+George's daughter is named Mina.,George,"daughter's name,Mina's","Mina,father"
+Mason Nazerick is Angelina Nazerick's husband.,Angelina Nazerick,"husband's name,Mason's","Mason Nazerith,wife"
+Caroline Grayson is Ashley's identical twin sister.,Caroline Grayson,"gender,sister's name,Ashley's","female,Ashley,identical twin sister"
+Joanna Daniels is Ted Daniels' wife who works as an engineer for NASA.,Ted Daniels,"Joanna's,wife's name","husband,Joanna"
+Andrew Anderson is Greta's reliable brother who helps out with their youngest sibling as much as he can.,Greta,"brother's name,Andrew's","Andrew Anderson,sister"
+Kathleen O'Brien is Shannon's mother.,Shannon,"mother's name,Kathleen's","Kathleen O'Brien,daughter"
+Brian Hamilton is Alexandra Hamilton's husband.,Alexandra Hamilton,"husband's name,Brian's","Brian Hamilton,wife"
+William Stevens is Janna's estranged father.,Janna Stevens,"father's name,William's","William Stevens,daughter"
+Renata Turner is Ash Turner's wife.,Ash Turner,"wife's name,Renata's","Renata Turner,husband"
+Borek Helma is the son of Katie Helma.,Katie Helma,"son's name,Borek's","Borek Helma,mother"
+Selma Vincenti is Nora's friend who recently got engaged to Bill.,Nora Johnson,"friend's name,Selma's","Selma Vincenti,friend"
+Victoria Sieffre is Timothy Sieffre's mother.,Timothy Sieffre,"mother's name,Victoria's","Victoria Sieffre,son"
+Seohyun Park is Julio Sanchez's girlfriend.,Julio Sanchez,"girlfriend's name,Seohyun's","Seohyun Park,boyfriend"
+Tamara Audra is Addison Audra's older sister.,Addison Audra,"sister's name,Tamara's","Tamara Audra,younger brother"
+Lily Price is nine years old and the older sister of Mariella Price.,Lily Price,"gender,age,sister's name,Mariella's","female,nine,Mariella Price,older sister"
+Emily Carpenter is a 17-year-old girl who is dealing with the death of her father.,Emily Carpenter,"gender,age","female,17"
+John is a devoted husband and father.,John Moraby,gender,male
+Joey had been writing love letters to his wife Mira throughout his deployment.,Joey,"gender,wife's name,Mira's","male,Mira,husband"
+Jane is married to John Smith and they have been together since high school.,Jane Smith,"husband's name,John's","John Smith,wife"
+Brenton Goldman is Sarah's father.,Brenton Goldman,"gender,Sarah's,daughter's name","male,father,Sarah"
+Shane West is Becky West's older brother.,Becky West,"brother's name,Shane's","Shane West,younger sister"
+John Doe is Jane Doe's father.,Jane Doe,"father's name,John's","John Doe,daughter"
+Becca Sullivan is Jason's younger daughter and Cassie's sister who stayed behind at their family's compound,Jason,"daughter's name,Becca's,Cassie's","Becca Sullivan and Cassie,father,father"
+Nolan Moore is Shannon's boss at the newspaper where she works as a reporter.,Shannon Rourke,"gender,boss's name,Nolan's","female,Nolan Moore,employee"
+Jacob Stein is Joseph's boss at the newspaper where he works as an editor.,Jacob Stein,"Joseph's,employee's name","boss,Joseph"
+Sarah Lincoln is a four-year-old girl who is the daughter of Mary Lincoln.,Sarah Lincoln,"gender,age,Mary's,mother's name","female,four,daughter,Mary Lincoln"
+Timmy Reed is a six-year-old boy who lost his father and is struggling to adjust to his new home.,Timmy Reed,"gender,age","male,six"
+"Johnny is a friendly and outgoing person, and he loves spending time with his sister Mira.",Johnny,"gender,sister's name,Mira's","male,Mira,brother"
+Anne Robbins is a teenage girl who is Professor Plum's granddaughter.,Anne Robbins,"gender,age,Professor Plum's,grandfather's name","female,teenage,granddaughter,Professor Plum"
+Margot Carson is Connor's grandmother.,Margot Carson,"gender,Connor's,grandson's name","female,grandmother,Connor"
+Colin Adams is Margaret's father and Serena's husband.,Colin Adams,"gender,Margaret's,daughter's name,Serena's,wife's name","male,father,Margaret,husband,Serena"
+Alonso Alvarez is Jacob and Maya's father.,Maya Alvarez,"father's name,Alonso's,brother's name,Jacob's","Alonso Alvarez,daughter,Jacob,sister"
