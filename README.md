@@ -23,15 +23,15 @@ This command uses our existing relevance and coherence reranker ckpts included i
 
 Main story generation arguments are compiled in `scripts/main.py`; follow the links there to see a complete list. Some particular arguments of interest:
 
-*Add the `--setup-only` flag to stop after generating the initial plan; the plan can then be reloaded by specifying `--load-outline-file` instead of `--save-outline-file` later.
-*Add `--no-editor` to turn off the Edit module. This will make generation a decent amount faster without sacrificing too much. This is the Plan-Draft-Rewrite ablation in our paper.
-*Add `--no-planner` to turn off the Plan module, which will make performance a good bit worse. This is the Draft-Rewrite-Edit ablation in our paper.
-*Set `--max-candidates 1` to turn off the Rewrite module, which will make performance a good bit worse. This is the Plan-Draft-Edit ablation in our paper. 
-*Increase `--max-beam-size` (defaults to 1) to turn on a passage-level variable-size beam search procedure based on the rerankers. This is off for the paper experiments (makes the system several times slower) but should improve performance a bit. 
-*Change `--fixed-outline-length` (defaults to 3) to set a desired length for your outline (i.e., how many numbered items it will have) or set it to -1 to accept variable length.
-*Change `--max-continuation-substeps` (defaults to 4) and `--generation-max-length` (defaults to 256) to change how much story text to write for each numbered item of the outline. With the default settings, it will write four 256-token passages for each.
-*For the longer story in Appendix K of the paper, we added `--outline-levels 2 --fixed-outline-length -1 --continuation-threshold 0.5 --max-continuation-substeps 5` which (1) generates a 2-level outline (note: the current version of this generates somewhat repetitive plans sometimes) and (2) dynamically decides when to move on to the next part of the outline during story generation based on reranker scores, instead of just using a fixed length for each part of the outline. 
-*Set `--log-level` to be something between 21 and 25 to vary the verbosity of logging (higher = less verbose). 
+* Add the `--setup-only` flag to stop after generating the initial plan; the plan can then be reloaded by specifying `--load-outline-file` instead of `--save-outline-file` later.
+* Add `--no-editor` to turn off the Edit module. This will make generation a decent amount faster without sacrificing too much. This is the Plan-Draft-Rewrite ablation in our paper.
+* Add `--no-planner` to turn off the Plan module, which will make performance a good bit worse. This is the Draft-Rewrite-Edit ablation in our paper.
+* Set `--max-candidates 1` to turn off the Rewrite module, which will make performance a good bit worse. This is the Plan-Draft-Edit ablation in our paper. 
+* Increase `--max-beam-size` (defaults to 1) to turn on a passage-level variable-size beam search procedure based on the rerankers. This is off for the paper experiments (makes the system several times slower) but should improve performance a bit. 
+* Change `--fixed-outline-length` (defaults to 3) to set a desired length for your outline (i.e., how many numbered items it will have) or set it to -1 to accept variable length.
+* Change `--max-continuation-substeps` (defaults to 4) and `--generation-max-length` (defaults to 256) to change how much story text to write for each numbered item of the outline. With the default settings, it will write four 256-token passages for each.
+* For the longer story in Appendix K of the paper, we added `--outline-levels 2 --fixed-outline-length -1 --continuation-threshold 0.5 --max-continuation-substeps 5` which (1) generates a 2-level outline (note: the current version of this generates somewhat repetitive plans sometimes) and (2) dynamically decides when to move on to the next part of the outline during story generation based on reranker scores, instead of just using a fixed length for each part of the outline. 
+* Set `--log-level` to be something between 21 and 25 to vary the verbosity of logging (higher = less verbose). 
 
 ### Baselines
 
@@ -82,7 +82,7 @@ Feel free to modify batch size depending on your GPU memory.
 
 ## Edit Module Analysis
 
-The data we used for evaluation in Section 5.2 can be found in `emnlp22_re3_data/data/consistency_analysis_data`. The command to evaluate each method is as follows, where `$METHOD$` is any of `structured`, `entailment`, or `entailment-dpr` corresponding to the methods of the same names in the paper. Note that there's some randomness involved in `structured` due to GPT3 reliance. The latter can also take a while to run. 
+The data we used for evaluation in Section 5.2 can be found in `emnlp22_re3_data/data/consistency_analysis_data`. The command to evaluate each method is as follows, where `$METHOD` is any of `structured`, `entailment`, or `entailment-dpr` corresponding to the methods of the same names in the paper. Note that there's some randomness involved in `structured` due to GPT3 reliance. The latter can also take a while to run. 
 
 ```
 CUDA_VISIBLE_DEVICES=0 python story_generation/edit_module/evaluate_consistency.py --consistency-dataset-dir $CONSISTENCY_DATA_DIR --consistency-method $METHOD
