@@ -1,6 +1,6 @@
 # Re3: Generating Longer Stories With Recursive Reprompting and Revision
 
-This repo contains code for Re3: Generating Longer Stories With Recursive Reprompting and Revision (TODO arxiv link) by Kevin Yang, Nanyun Peng, Yuandong Tian, and Dan Klein, to appear at EMNLP 2022. In this codebase we provide instructions for automatically generating stories of 2000+ words (or even much longer), as well as reproducing all of our baselines/ablations/analyses from the paper. We hope that this work can inspiration for further research in automatic long story generation. 
+This repo contains code for Re3: Generating Longer Stories With Recursive Reprompting and Revision (https://arxiv.org/abs/2210.06774) by Kevin Yang, Nanyun Peng, Yuandong Tian, and Dan Klein, to appear at EMNLP 2022. In this codebase we provide instructions for automatically generating stories of 2000+ words (or even much longer), as well as reproducing all of our baselines/ablations/analyses from the paper. We hope that this work can be useful for future research on automatic long story generation. 
 
 ## Installation / Data
 
@@ -8,7 +8,7 @@ Install Python 3.8.13 and PyTorch 1.12.1 (other versions are probably also fine 
 
 Also run `export OPENAI_API_KEY=$YOUR_API_KEY` in your terminal so that the code can call the GPT3 API with your key. 
 
-Meanwhile, run `wget https://emnlp22-re3-data.s3.amazonaws.com/emnlp22_re3_data.zip` and unzip the folder. This folder contains some pretrained reranker ckpts as well as all of the data we used in all components/analyses. It also contains the final generated stories and MTurk annotation results from our main experiments.
+Meanwhile, run `wget https://emnlp22-re3-data.s3.amazonaws.com/emnlp22_re3_data.zip` and unzip the folder. This folder contains some pretrained reranker ckpts as well as all of the data we used in all components/analyses. It also contains the final generated stories and MTurk annotation results from our main experiments (note: some generated stories may contain sensitive/NSFW content, since we didn't attempt to filter these).
 
 ## Main Story Generation
 
@@ -30,7 +30,7 @@ Main story generation arguments are compiled in `scripts/main.py`; follow the li
 * Increase `--max-beam-size` (defaults to 1) to turn on a passage-level variable-size beam search procedure based on the rerankers. This is off for the paper experiments (makes the system several times slower) but should improve performance a bit. 
 * Change `--fixed-outline-length` (defaults to 3) to set a desired length for your outline (i.e., how many numbered items it will have) or set it to -1 to accept variable length.
 * Change `--max-continuation-substeps` (defaults to 4) and `--generation-max-length` (defaults to 256) to change how much story text to write for each numbered item of the outline. With the default settings, it will write four 256-token passages for each.
-* For the longer story in Appendix K of the paper, we added `--outline-levels 2 --fixed-outline-length -1 --continuation-threshold 0.5 --max-continuation-substeps 5` which (1) generates a 2-level outline (note: the current version of this generates somewhat repetitive plans sometimes) and (2) dynamically decides when to move on to the next part of the outline during story generation based on reranker scores, instead of just using a fixed length for each part of the outline. 
+* For the longer story in Appendix L of the paper, we added `--outline-levels 2 --fixed-outline-length -1 --continuation-threshold 0.5 --max-continuation-substeps 5` which (1) generates a 2-level outline (note: the current version of this generates somewhat repetitive plans sometimes) and (2) dynamically decides when to move on to the next part of the outline during story generation based on reranker scores, instead of just using a fixed length for each part of the outline. 
 * Set `--log-level` to be something between 21 and 25 to vary the verbosity of logging (higher = less verbose). 
 
 ### Baselines
