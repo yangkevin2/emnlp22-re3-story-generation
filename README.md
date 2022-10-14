@@ -1,6 +1,6 @@
 # Re3: Generating Longer Stories With Recursive Reprompting and Revision
 
-This repo contains code for Re3: Generating Longer Stories With Recursive Reprompting and Revision (https://arxiv.org/abs/2210.06774) by Kevin Yang, Nanyun Peng, Yuandong Tian, and Dan Klein, to appear at EMNLP 2022. In this codebase we provide instructions for automatically generating stories of 2000+ words (or even much longer), as well as reproducing all of our baselines/ablations/analyses from the paper. We hope that this work can be useful for future research on automatic long story generation. 
+This repo contains code for Re3: Generating Longer Stories With Recursive Reprompting and Revision (https://arxiv.org/abs/2210.06774) by Kevin Yang, Yuandong Tian, Nanyun Peng, and Dan Klein, to appear at EMNLP 2022. In this codebase we provide instructions for automatically generating stories of 2000+ words (or even much longer), as well as reproducing all of our baselines/ablations/analyses from the paper. We hope that this work can be useful for future research on automatic long story generation. 
 
 ## Installation / Data
 
