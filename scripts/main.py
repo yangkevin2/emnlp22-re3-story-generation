@@ -36,6 +36,8 @@ if __name__=='__main__':
     parser = add_summarizer_args(parser)
     parser = add_controller_args(parser)
 
+    parser.add_argument('--premise', type=str, default=None, help='Premise to use for generation')
+
     # SAVE/LOAD PLAN/LOGS
     parser.add_argument('--load-outline-file', type=str, help='load outline from this file')
     parser.add_argument('--save-outline-file', type=str, help='save outline to this file')

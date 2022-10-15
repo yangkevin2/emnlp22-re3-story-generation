@@ -90,13 +90,13 @@ class BeamCandidate:
         context_encodings = dpr_context_encoder.encode(entities)
         scores = (query_encoding.reshape(1, -1) * context_encodings).sum(axis=1)
         selected_entities = matched_entities
-        total_tokens = sum([len(self.model.tokenizer.encode(entity)) for entity in selected_entities])
+        total_tokens = sum([len(self.model.tokenizer.encode(self.all_entities_dict[entity].description)) for entity in selected_entities])
         if total_tokens > self.args.max_entity_context_tokens:
             logging.warning('Warning: truncating entity context to fit context length limit')
             selected_entities = []
             total_tokens = 0
             for entity in matched_entities:
-                total_tokens += len(self.model.tokenizer.encode(entity))
+                total_tokens += len(self.model.tokenizer.encode(self.all_entities_dict[entity].description))
                 if total_tokens > self.args.max_entity_context_tokens:
                     break
                 selected_entities.append(entity)
@@ -109,7 +109,7 @@ class BeamCandidate:
         while total_tokens < self.args.max_entity_context_tokens and len(unselected_entities) > 0:
             probs = softmax(scores)
             next_entity = np.random.choice(entities, p=probs)
-            total_tokens += len(self.model.tokenizer.encode(next_entity))
+            total_tokens += len(self.model.tokenizer.encode(self.all_entities_dict[next_entity].description))
             if total_tokens > self.args.max_entity_context_tokens:
                 break
             selected_entities.append(next_entity)
