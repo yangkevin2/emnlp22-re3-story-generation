@@ -14,6 +14,7 @@ Meanwhile, run `wget https://emnlp22-re3-data.s3.amazonaws.com/emnlp22_re3_data.
 
 Main story generation command matching the settings used for our main paper experiments:
 ```
+mkdir output
 CUDA_VISIBLE_DEVICES=0 python -u scripts/main.py --summarizer gpt3_summarizer --controller longformer_classifier longformer_classifier --loader alignment coherence --controller-load-dir emnlp22_re3_data/ckpt/relevance_reranker emnlp22_re3_data/ckpt/coherence_reranker --controller-model-string allenai/longformer-base-4096 allenai/longformer-base-4096 --save-outline-file output/outline0.pkl --save-complete-file output/complete_story0.pkl --log-file output/story0.log
 ```
 
