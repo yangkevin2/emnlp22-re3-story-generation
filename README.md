@@ -18,6 +18,8 @@ mkdir output
 CUDA_VISIBLE_DEVICES=0 python -u scripts/main.py --summarizer gpt3_summarizer --controller longformer_classifier longformer_classifier --loader alignment coherence --controller-load-dir emnlp22_re3_data/ckpt/relevance_reranker emnlp22_re3_data/ckpt/coherence_reranker --controller-model-string allenai/longformer-base-4096 allenai/longformer-base-4096 --save-outline-file output/outline0.pkl --save-complete-file output/complete_story0.pkl --log-file output/story0.log
 ```
 
+Don't worry if you see some errors being printed, as long as the program doesn't terminate early. (For example, it may need multiple tries in some parts of the initial plan generation.)
+
 This command uses our existing relevance and coherence reranker ckpts included in the download (note: these were retrained after submission to be compatible with an updated version of the HuggingFace transformers package, but otherwise are effectively the same as the ones we used in our paper experiments). If you want to use your own ckpts, see the instructions further down for training, and change the paths in this command to point to the correct ckpts. 
 
 ### Other Arguments
