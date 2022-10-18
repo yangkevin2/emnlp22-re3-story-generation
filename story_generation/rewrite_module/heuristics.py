@@ -39,7 +39,7 @@ def calculate_repetition_length_penalty(generation, prompt_sentences, levenshtei
     if max_length is not None:
         if len(tokenizer.encode(generation)) > max_length:
             return 10
-    if any([s.lower() in generation.lower() for s in ['\nRelevant', '\nContext', '\nComment', 'Summar', '\nSupporting', '\nEvidence', '\nStages', '\nText', '\nAssum', '\n1.', '\n1)', '\nRelationship', '\nMain Character', '\nCharacter', '\nConflict:', '\nPlot', 'TBA', 'POV', 'protagonist', '\nEdit ', '\nPremise', 'Suspense', 'www', '[', ']', 'copyright', 'chapter', '\nNote', 'Full Text', 'narrat', '\n(', 'All rights reserved', 'story', '(1)', 'passage', '\nRundown', 'playdown', 'episode', 'plot device', 'java', '\nQuestion', '\nDiscuss']]): # it's repeating parts of the prompt/reverting to analysis
+    if any([s.lower() in generation.lower() for s in ['\nRelevant', '\nContext', '\nComment', 'Summar', '\nSupporting', '\nEvidence', '\nStages', '\nText', '\nAssum', '\n1.', '\n1)', '\nRelationship', '\nMain Character', '\nCharacter', '\nConflict:', '\nPlot', 'TBA', 'POV', 'protagonist', '\nEdit ', '\nPremise', 'Suspense', 'www', '[', ']', 'copyright', 'chapter', '\nNote', 'Full Text', 'narrat', '\n(', 'All rights reserved', '(1)', 'passage', '\nRundown', 'playdown', 'episode', 'plot device', 'java', '\nQuestion', '\nDiscuss', 'The story', 'This story']]): # it's repeating parts of the prompt/reverting to analysis
         return 10
     generation_paragraphs = split_paragraphs(generation, mode='newline')
     for paragraph in generation_paragraphs:
@@ -59,7 +59,7 @@ def calculate_repetition_length_penalty(generation, prompt_sentences, levenshtei
         if ' '.join(split[i-5:i]) in ' '.join(split[i:]): # penalize repetition within the generation itself
             penalty += 0.3
             # break
-    mildly_bad_strings = ['\n\n\n\n\n', 'story', 'stories', 'passage', 'perspective', 'point of view', 'summar', 'paragraph', 'sentence', 'example', 'analy', 'section', 'character', 'review', 'readers', '(', ')', 'blog', 'website', 'comment']
+    mildly_bad_strings = ['\n\n\n\n\n', 'passage', 'perspective', 'point of view', 'summar', 'paragraph', 'sentence', 'example', 'analy', 'section', 'character', 'review', 'readers', '(', ')', 'blog', 'website', 'comment']
     if not is_outline:
         mildly_bad_strings += ['1.', '2.', '3.', '4.', '5.']
     num_mildly_bad_strings = sum([1 for s in mildly_bad_strings if s in generation.lower()])

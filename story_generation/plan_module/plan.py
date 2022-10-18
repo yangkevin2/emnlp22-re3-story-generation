@@ -176,13 +176,16 @@ def load_plan_info(plan_file):
 def generate_plan_info(args, instruct_model, include_outline=True, model_string='text-davinci-002'):
     while True:
         try:
-            premise_prompt = "Write a premise for a short story."
-            max_premise_tokens = 128
-            premise = (instruct_model([premise_prompt], top_p=1, temperature=1.2, modify_prompt=False, generation_max_length=max_premise_tokens, model_string=model_string)[0]) # more diversity with premises with higher temp
-            if len(instruct_model.tokenizer.encode(premise)) == max_premise_tokens: # likely we got cutoff instead of ending naturally
-                logging.warning('premise too long, retrying')
-                raise ValueError
-            premise = premise.strip()
+            if args.premise is None:
+                premise_prompt = "Write a premise for a short story."
+                max_premise_tokens = 128
+                premise = (instruct_model([premise_prompt], top_p=1, temperature=1.2, modify_prompt=False, generation_max_length=max_premise_tokens, model_string=model_string)[0]) # more diversity with premises with higher temp
+                if len(instruct_model.tokenizer.encode(premise)) == max_premise_tokens: # likely we got cutoff instead of ending naturally
+                    logging.warning('premise too long, retrying')
+                    raise ValueError
+                premise = premise.strip()
+            else:
+                premise = args.premise.strip()
 
             logging.log(25, 'Premise: ' + premise)
 
