@@ -83,7 +83,8 @@ if __name__=='__main__':
     gpt3_model = load_summarizer(args) # naming is a relic of some old preliminary experiments; it's just a gpt3 interface
     controllers = [load_controller(args, i) for i in range(len(args.controller))]
     assert all([controller.type == 'sentence' for controller in controllers])
-    
+    assert len(controllers) == 2, 'Re3 expects both a relevance and a coherence reranker; please see the example command in the README'
+
     if args.load_outline_file is not None:
         save_info = load_plan_info(args.load_outline_file)
         if (not args.no_attributes and not args.no_editor and not args.no_planner): # fill in the attributes if we need them, if they're not already present in the save
