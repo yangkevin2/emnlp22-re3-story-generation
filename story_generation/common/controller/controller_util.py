@@ -13,7 +13,7 @@ def add_controller_args(parser):
     parser.add_argument('--controller-load-dir', type=str, nargs='*', default=[''], help='directory to load controller')
     parser.add_argument('--controller-epochs', type=int, default=1, help='number of epochs for controller finetuning')
     parser.add_argument('--fudge-time-label-decay', type=float, default=1.0, help='discounting for label weights over time for controller training')
-    parser.add_argument('--control-strength', type=float, nargs='*', default=[1.0], help='strength of control for controller inference')
+    parser.add_argument('--control-strength', type=float, nargs='*', default=None, help='strength of control for controller inference')
     parser.add_argument('--fudge-top-k', type=int, nargs='*', default=[100], help='top k for fudge inference')
     parser.add_argument('--controller-num-negatives', type=int, default=1, help='number of negative samples for controller contrastive training')
     parser.add_argument('--coherence-negative-categories', type=str, nargs='*', default=['other', 'repeat', 'shuffle'], help='types of negatives for coherence')

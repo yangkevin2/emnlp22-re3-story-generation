@@ -7,7 +7,7 @@ DATASET_CHOICES=['writing_prompts', 'alignment']
 
 def add_data_args(parser):
     parser.add_argument('--dataset', type=str, default='writing_prompts', choices=DATASET_CHOICES, help='dataset format')
-    parser.add_argument('--data-dir', type=str, default='/home/yangk/data/story/writing_prompts', help='data directory')
+    parser.add_argument('--data-dir', type=str, help='data directory')
     parser.add_argument('--split-sizes', type=float, nargs=3, default=[0.8, 0.1, 0.1], help='train/val/test proportions for datasets where not provided')
     parser.add_argument('--summarizer-prediction-split', type=str, default='valid', help='split to use for summarizer predictions')
     parser.add_argument('--limit', type=int, default=None, help='limit the number of examples')

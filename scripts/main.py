@@ -9,6 +9,7 @@ import multiprocessing as mp
 import random
 import string
 import logging
+import json
 
 import torch
 import Levenshtein
@@ -24,6 +25,7 @@ from story_generation.common.util import *
 from story_generation.common.data.data_util import add_data_args, load_dataset
 from story_generation.common.summarizer.summarizer_util import add_summarizer_args, load_summarizer
 from story_generation.common.summarizer.models.gpt3_summarizer import GPT3_SEP, GPT3_END
+from story_generation.common.summarizer.models.opt_summarizer import OPTSummarizer
 from story_generation.common.controller.controller_util import add_controller_args, load_controller
 from story_generation.common.controller.loaders.alignment_loader import create_prefix_completion
 from story_generation.common.data.split_paragraphs import *
@@ -71,21 +73,43 @@ if __name__=='__main__':
     parser.add_argument('--entity-description-max-length', type=int, default=48, help='max number of tokens to use per entity description')
     
     # GENERATION PARAMETERS
+    parser.add_argument('--extension-method', type=str, choices=['gpt3', 'opt'], default='gpt3', help='generator to use for main story drafting')
     parser.add_argument('--repetition-penalty-weight', type=float, default=5, help='weight of repetition penalty')
     parser.add_argument('--draft-top-p', type=float, default=1, help='initial top_p for beam search')
     parser.add_argument('--plan-model-string', type=str, default='text-davinci-002', help='gpt3 model string to use in planning')
     parser.add_argument('--draft-model-string', type=str, default='davinci', help='gpt3 model string to use in extending story')
+    parser.add_argument('--cut-sentence', action='store_true', default=False, help='cut incomplete sentence at end of generation')
     
     args = parser.parse_args()
 
+    if os.path.exists(args.save_complete_file):
+        logging.log(25, 'save file already exists')
+        sys.exit()
+
+    os.makedirs(os.path.dirname(args.log_file), exist_ok=True)
     logging.basicConfig(format='%(message)s', filename=args.log_file, level=args.log_level)
 
     gpt3_model = load_summarizer(args) # naming is a relic of some old preliminary experiments; it's just a gpt3 interface
     controllers = [load_controller(args, i) for i in range(len(args.controller))]
     assert all([controller.type == 'sentence' for controller in controllers])
+    opt_model = OPTSummarizer(args) if args.extension_method == 'opt' else None
     
     if args.load_outline_file is not None:
-        save_info = load_plan_info(args.load_outline_file)
+        if args.load_outline_file.endswith('.pkl'):
+            save_info = load_plan_info(args.load_outline_file)
+        else:
+            with open(args.load_outline_file, 'r') as f:
+                info = json.load(f)
+                if 'character_strings' not in info:
+                    character_strings = {}
+                    for name, desc in info['character_info']:
+                        character_strings[name] = Entity(name, desc, is_character=True)
+                save_info = {'premise': info['premise'],
+                            'setting': info['setting'],
+                            'character_strings': character_strings,
+                            'outline': None,
+                            'outline_sections': info['outline_sections'],
+                            'infer_attributes_string': info['premise'] + '\n\n' + info['setting'] + '\n\n' + '\n\n'.join([c.description for c in character_strings.values()])}
         if (not args.no_attributes and not args.no_editor and not args.no_planner): # fill in the attributes if we need them, if they're not already present in the save
             infer_initial_attributes_from_plan(save_info, gpt3_model)
     else:
@@ -99,11 +123,9 @@ if __name__=='__main__':
     
     premise = save_info['premise']
     setting = save_info['setting']
-    characters = save_info['characters']
     character_strings = save_info['character_strings']
-    outline = save_info['outline']
     outline_sections = save_info['outline_sections']
-    infer_attributes_string = save_info['infer_attributes_string']
+    infer_attributes_string = premise + '\n\n' + setting + '\n\n' + '\n\n'.join([c.description for c in character_strings.values()])
     
     if args.no_attributes:
         all_entities_dict = {}
@@ -118,6 +140,7 @@ if __name__=='__main__':
                           all_entities_dict, 
                           infer_attributes_string,
                           model=gpt3_model,
+                          opt_model=opt_model,
                           controllers=controllers)]
     if not args.no_editor and not args.no_planner:
         for candidate in beam:
@@ -129,9 +152,25 @@ if __name__=='__main__':
                 if key != 'Premise':
                     del candidate.all_entities_dict[key]
     outline_sections[-1] = outline_sections[-1] + ' This is the end of the story.'
+
+    # restart from intermediate if exists
+    for i in range(len(outline_sections)-1, -1, -1):
+        if os.path.exists(args.save_complete_file + '.temp' + str(i)):
+            logging.log(25, 'found temp file for section ' + str(i) + ', restarting from there')
+            with open(args.save_complete_file + '.temp' + str(i), 'rb') as f:
+                beam = pickle.load(f)
+                for b in beam:
+                    b.controllers = controllers
+                    b.model = gpt3_model
+                    b.opt_model = opt_model
+            break
+
     for i in range(len(outline_sections)):
         logging.log(25, '\n\n\n\niteration at step ' + str(i))
         outline_section = outline_sections[i]
+        if outline_section in beam[0].outline_sections:
+            logging.log(25, 'already generated this section')
+            continue
         extensions = sum([b.extend(outline_section) for b in beam], [])
         extensions = sorted(extensions, key=lambda x: x.best_alignment_so_far, reverse=True)
         # pick the best extension plus up to max_beam_size that are below some alignment threshold
@@ -141,11 +180,21 @@ if __name__=='__main__':
                 new_beam.append(extension)
         beam = new_beam
         for b in beam:
-            b.condense_outline_sections(outline)
+            b.condense_outline_sections(None)
         logging.log(25, '\n\n\n\nend of iteration ' + str(i))
         for entity in beam[0].all_entities_dict.values():
             logging.debug(entity)
-        logging.debug(beam[0].story())
+        logging.log(23, beam[0].story())
+
+        # save intermediate
+        with open(args.save_complete_file + '.temp' + str(i), 'wb') as f:
+            for b in beam:
+                b.controllers = None
+            pickle.dump(beam, f)
+            for b in beam:
+                b.controllers = controllers
+        if i > 0 and os.path.exists(args.save_complete_file + '.temp' + str(i-1)):
+            os.remove(args.save_complete_file + '.temp' + str(i-1))
     
     for i in range(len(beam)):
         should_continue = True
@@ -161,4 +210,6 @@ if __name__=='__main__':
     logging.log(25, beam[0].story())
     if args.save_complete_file is not None:
         with open(args.save_complete_file, 'wb') as wf:
+            for b in beam:
+                b.controllers = None
             pickle.dump(beam, wf)

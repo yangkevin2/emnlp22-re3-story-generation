@@ -30,7 +30,7 @@ from story_generation.common.data.split_paragraphs import *
 def generate_initial_entity_strings(premise, setting, instruct_model, num_entities=3, max_description_length=48, model_string='text-davinci-002'):
     # TODO figure out alternative stopping criterion for generating initial characters?
     initial_characters_prompt = "Premise: " + premise.strip() + '\n\n' + 'Setting: ' + setting.strip() + '\n\nList the names and details of all major characters.'
-    name_bias_words = ['protagonist', 'Protagonist', 'PROTAGONIST', 'unnamed', 'Unnamed', 'UNNAMED', 'unknown', 'Unknown', 'UNKNOWN', 'None', 'none', 'None', 'Mr', 'Ms', 'Mrs', 'Dr', 'TBA', 'TBD', 'N/A'] # technically no ' can filter out some reasonable names, but it's not a big deal and prevents some bad cases
+    name_bias_words = ['protagonist', 'Protagonist', 'PROTAGONIST', 'unnamed', 'Unnamed', 'UNNAMED', 'unknown', 'Unknown', 'UNKNOWN', 'None', 'none', 'None', 'Mr.', 'Ms.', 'Mrs.', 'Dr.', 'TBA', 'TBD', 'N/A'] # technically no ' can filter out some reasonable names, but it's not a big deal and prevents some bad cases
     banned_name_words = name_bias_words + ['\'', '_', '\n', '"', '#', '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'redacted', 'mother', 'father', 'gram', 'grand', 'name', 'appearance', 'occupation', 'age', 'gender', 'sex', 'role', 'profession', 'job', 'friend'] + list(string.punctuation) # sometimes it'll find weird ascii chars to replace these if they're banned via logit bias
     name_logit_bias = get_repetition_logit_bias(instruct_model.tokenizer, initial_characters_prompt + ' ' + ' '.join(name_bias_words), bias=-5, bias_common_tokens=True)
     name_logit_bias[198] = -5 # also penalize newline, although we want it eventually eventually
@@ -44,6 +44,7 @@ def generate_initial_entity_strings(premise, setting, instruct_model, num_entiti
             filtered_name_continuations = []
             for name in name_continuations:
                 name_is_good = True
+                name = name.strip()
                 for word in name.strip().split():
                     if word.strip(string.punctuation) not in characters_prompt and sum([1 for n in name_continuations if word in n]) >= 2: # >=2 because it's in the name itself and at least 1 other
                         name_is_good = False

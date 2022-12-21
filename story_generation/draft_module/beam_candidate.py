@@ -33,23 +33,25 @@ class BeamCandidate:
                  all_entities_dict,
                  infer_attributes_string,
                  model=None,
+                 opt_model=None,
                  controllers=None,
                  step=0, 
                  alignment_score=-1e8, 
                  best_alignment_so_far=-1e8,
-                 all_paragraphs=[], 
-                 outline_sections=[],
+                 all_paragraphs=None, 
+                 outline_sections=None,
                  paragraphs_by_outline_section=None):
         self.args = args
         self.all_entities_dict = all_entities_dict
         self.infer_attributes_string = infer_attributes_string
         self.model = model
+        self.opt_model = opt_model
         self.controllers = controllers
         self.step = step
         self.alignment_score = alignment_score
         self.best_alignment_so_far = best_alignment_so_far
-        self.all_paragraphs = all_paragraphs
-        self.outline_sections = outline_sections
+        self.all_paragraphs = all_paragraphs if all_paragraphs is not None else []
+        self.outline_sections = outline_sections if outline_sections is not None else []
         self.paragraphs_by_outline_section = paragraphs_by_outline_section if paragraphs_by_outline_section is not None else {}
         self.is_consistent = False
     
@@ -211,10 +213,12 @@ class BeamCandidate:
         if len(self.all_paragraphs) == 0:
             prompt = prompt + 'Chapter 1\n\n'
         prompt = prompt + previous_text
-        if len(self.model.tokenizer.encode(prompt)) > presumed_max_prompt_length:
+        length_model = self.model if self.args.extension_method == 'gpt3' else self.opt_model
+        if len(length_model.tokenizer.encode(prompt)) > presumed_max_prompt_length:
             # generation max length from selected entities and outline, max entity context tokens from previous context, then some padding
             logging.warning('Warning: prompt is too long, please inspect')
-            import pdb; pdb.set_trace()
+            prompt = length_model.tokenizer.decode(length_model.tokenizer.encode(prompt)[-presumed_max_prompt_length:]) # left truncate prompt to fit our imposed limit on context window size
+            # import pdb; pdb.set_trace()
         return prompt
     
     @torch.no_grad()
@@ -300,9 +304,11 @@ class BeamCandidate:
         alignment_score = 0
         if not self.args.no_planner:
             alignment_input = [create_prefix_completion(c, outline_section)[1] for c in completions]
-            alignment_score = self.controllers[0].evaluate_overall_texts(alignment_input).cpu().numpy() # logprob for alignment with outline
+            multiplier = 1 if self.args.control_strength is None else self.args.control_strength[0]
+            alignment_score = multiplier * self.controllers[0].evaluate_overall_texts(alignment_input).cpu().numpy() # logprob for alignment with outline
+        multiplier = 1 if self.args.control_strength is None else self.args.control_strength[1]
         if len(self.story().strip()) > 0:
-            alignment_score += self.controllers[1]([cut_first_sentence(self.previous_passage(1000)) for _ in range(len(completions))], completions).cpu().numpy() # logprob for alignment with previous story, up to 1k prev tokens
+            alignment_score += multiplier * self.controllers[1]([cut_first_sentence(self.previous_passage(1000)) for _ in range(len(completions))], completions).cpu().numpy() # logprob for alignment with previous story, up to 1k prev tokens
         alignment_score += -repetition_penalty * self.args.repetition_penalty_weight
         return alignment_score
 
@@ -316,7 +322,48 @@ class BeamCandidate:
         prompt = self.construct_prompt(outline_section, selected_entities=selected_entities)
         logging.log(21, 'PROMPT')
         logging.log(21, prompt)
-        completions = self.model([prompt], model_string=self.args.draft_model_string, modify_prompt=False, num_completions=batch_size, top_p=top_p, temperature=self.args.summarizer_temperature, cut_sentence=True, logit_bias={50256:-100, 14126:-100, 7006:-100, 6843:-100, 43582:-100}) # don't let it end prematurely, and don't let it repeatedly generate variants of the word "chapter" since we used it to prompt it initially # stop=['Chapter', 'Chapters', 'Full text', '\n\n\n\n\n']
+        if self.args.extension_method == 'gpt3':
+            completions = self.model([prompt], model_string=self.args.draft_model_string, modify_prompt=False, num_completions=batch_size, top_p=top_p, temperature=self.args.summarizer_temperature, cut_sentence=True, logit_bias={50256:-100, 14126:-100, 7006:-100, 6843:-100, 43582:-100}) # don't let it end prematurely, and don't let it repeatedly generate variants of the word "chapter" since we used it to prompt it initially # stop=['Chapter', 'Chapters', 'Full text', '\n\n\n\n\n']
+        elif self.args.extension_method == 'opt':
+            exclude_strings = stopwords.words('english') + list("!\"“”‘’'(),-.:;?") + ['\n', '\n\n'] + ([] if selected_entities is None else selected_entities)
+            if self.args.no_planner:
+                opt_control_logit_bias = {}
+            else:
+                assert '\n\nFull text below:\n\n' in prompt
+                previous_paragraph = prompt.split('\n\nFull text below:\n\n')[-1].strip()
+                opt_control_logit_bias = self.opt_model.create_logit_bias_for_prompt(
+                    previous_paragraph, 
+                    bias=-self.args.summarizer_frequency_penalty,
+                    decay=self.args.summarizer_frequency_penalty_decay,
+                )
+                prompt_logit_bias_string = prompt[:len(prompt) - len(previous_paragraph)]
+                for character in self.all_entities_dict:
+                    prompt_logit_bias_string = prompt_logit_bias_string.replace(self.all_entities_dict[character].description, '') # don't bias against char descriptions?
+                opt_control_logit_bias_prompt = self.opt_model.create_logit_bias_for_prompt(
+                    prompt_logit_bias_string,
+                    bias=-self.args.summarizer_prompt_penalty,
+                    exclude_strings=exclude_strings,
+                )
+                for key in opt_control_logit_bias_prompt:
+                    if key in opt_control_logit_bias:
+                        opt_control_logit_bias[key] = min(opt_control_logit_bias[key], opt_control_logit_bias_prompt[key])
+                    else:
+                        opt_control_logit_bias[key] = opt_control_logit_bias_prompt[key]
+            opt_control_logit_bias[2] = -1e8 # ban </s>
+            completions = self.opt_model.generate_with_controller(
+                [],
+                [],
+                prompt, 
+                control_strengths=[],
+                generation_max_length=self.args.generation_max_length,
+                temperature=self.args.opt_summarizer_temperature,
+                logit_bias=opt_control_logit_bias,
+                num_completions=batch_size,
+                cut_sentence=self.args.cut_sentence,
+                logit_bias_decay=self.args.summarizer_frequency_penalty_decay,
+            )
+        else:
+            raise NotImplementedError
         for i in range(len(completions)):
             completions[i] = completions[i].strip()
             while '\n\n\n' in completions[i]: # just improve the formatting a bit
@@ -335,6 +382,7 @@ class BeamCandidate:
                                 self.all_entities_dict,
                                 self.infer_attributes_string,
                                 model=self.model, 
+                                opt_model=self.opt_model,
                                 controllers=self.controllers, 
                                 step=self.step, 
                                 alignment_score=s, 
@@ -375,6 +423,7 @@ class BeamCandidate:
                             self.all_entities_dict,
                             self.infer_attributes_string,
                             model=self.model, 
+                            opt_model=self.opt_model,
                             controllers=self.controllers, 
                             step=self.step, 
                             alignment_score=self.alignment_score, 
